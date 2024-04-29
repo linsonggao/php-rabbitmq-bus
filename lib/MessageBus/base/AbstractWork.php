@@ -23,8 +23,6 @@ abstract class AbstractWork
     private $url = "https://analytics.oceanengine.com/api/v2/conversion";
 
     public function callback($content) {
-        $result = curlPost($this->url,$content);
-        $result = json_decode($result,true);
-        return $result;
+        return 0;
     }
 }

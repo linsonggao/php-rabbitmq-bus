@@ -5,12 +5,10 @@ namespace app\lib\MessageBus\base;
 
 use app\lib\Instance;
 use app\lib\MessageBus\BusPassenger;
-use app\lib\MessageBus\HandlerRegistrar;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Exception\AMQPConnectionClosedException;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Wire\AMQPTable;
-use think\facade\Log;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
 
@@ -70,11 +68,9 @@ class AmqpBus extends AbstractBus implements BusInterface
         //消费队列～
         $busInfo = BusPassenger::instance()->getBusInfo($bus_name);
         foreach ($busInfo['passengers'] as $queue_name) {
-            dump("等待消费的队列", $queue_name);
             //$this->queue_name = $queue_name;
             $channel->basic_consume($queue_name, '', false, $noAck, false, false, function (AMQPMessage $msg) use ($queue_name) {
                 $messageData = json_decode($msg->body, true);
-                dump("监听队列成功", $queue_name);
                 //执行对应的class即可
                 //todo.
                 $handler = BusPassenger::Instance()->getWork()[$queue_name]['class'];
@@ -83,10 +79,7 @@ class AmqpBus extends AbstractBus implements BusInterface
                     /**@var AbstractWork $handler**/
                     $handler::Instance($handler)->handler($messageData);
                 } catch (\Throwable $e) {
-                    dump($e);
-                    dump("消息消费错误信息:".$e->getMessage());
-                    log::write('Failed handling messages :'.var_export($e,true));
-                    log::write('Failed handling messages :'.$e->getMessage());
+                    var_dump("消息消费错误信息:".$e->getMessage());
                 };
             });
         }
@@ -95,10 +88,8 @@ class AmqpBus extends AbstractBus implements BusInterface
         // AMQP 队列的轮询时长
         $waitSeconds = $options['wait_seconds'] ?? 15;
         try {
-            log::write("Start consuming  $bus_name");
             $channel->consume($waitSeconds);
         } catch (AMQPConnectionClosedException $e) {
-            log::write("Error consuming  ");
         }
     }
 

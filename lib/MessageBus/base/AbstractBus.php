@@ -7,7 +7,6 @@ namespace app\lib\MessageBus\base;
 use app\lib\MessageBus\BusPassenger;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Wire\AMQPTable;
-use think\facade\Cache;
 
 abstract class AbstractBus
 {
@@ -73,11 +72,11 @@ abstract class AbstractBus
             // 直接把队列绑定到默认交换机和事件交换机
             // routing key 等于原始队列名称
             $channel->queue_bind($bus_name, self::DEFAULT_EXCHANGE, $bus_name);
-            dump("  bound to " . self::DEFAULT_EXCHANGE);
+            //dump("  bound to " . self::DEFAULT_EXCHANGE);
             foreach ($businfo['passengers'] as $passenger) {
                 $channel->queue_declare($passenger, false, true, false, false);
                 $channel->queue_bind($passenger, $bus_name, $passenger);
-                dump("1111 queue $passenger  bound to $bus_name");
+                //dump("1111 queue $passenger  bound to $bus_name");
             }
         };
         $bindDelayBusQueue = function ($businfo,AMQPChannel $channel, $passenger, $bus_name) {
@@ -90,7 +89,7 @@ abstract class AbstractBus
                 'x-dead-letter-routing-key' => $bus_name,
             ]));
 
-            dump("  delayed queue $delayedName declared, dead letting exchange " . self::DEAD_LETTER_EXCHANGE);
+            //dump("  delayed queue $delayedName declared, dead letting exchange " . self::DEAD_LETTER_EXCHANGE);
 
             // 把延迟队列绑定到事件交换机
             // routing key 等于原始队列名称
@@ -101,7 +100,7 @@ abstract class AbstractBus
             // 实际消费队列绑定到死信交换机
             $channel->queue_declare($passenger, false, true, false, false);
             $channel->queue_bind($passenger, self::DEAD_LETTER_EXCHANGE, $bus_name);
-            dump("$passenger final  bound to $bus_name");
+            //dump("$passenger final  bound to $bus_name");
         };
         $this->bindBusPassengers($channel, $bus_name,$bindDirectBusQueue,$bindDelayBusQueue);
     }
