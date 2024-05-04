@@ -1,10 +1,10 @@
 <?php
 
 
-namespace app\lib\MessageBus\base;
+namespace PhpRabbitMq\Lib\MessageBus\base;
 
-use app\lib\Instance;
-use app\lib\MessageBus\BusPassenger;
+use PhpRabbitMq\Lib\Instance;
+use PhpRabbitMq\Lib\MessageBus\BusPassenger;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Exception\AMQPConnectionClosedException;
 use PhpAmqpLib\Message\AMQPMessage;
@@ -30,8 +30,6 @@ class AmqpBus extends AbstractBus implements BusInterface
             $param['login'],
             $param['password'],
             $param['vhost'],
-            keepalive: true,
-            heartbeat: 3
         );
         //dump("ensureBus");
         /*
@@ -49,7 +47,7 @@ class AmqpBus extends AbstractBus implements BusInterface
          * 同样是创建路由和队列，以及绑定路由队列，注意要跟publisher的一致
          * 这里其实可以不用，但是为了防止队列没有被创建所以做的容错处理
          */
-        //dump("ensureBus");
+        var_dump("ensureBus");
         $this->ensureBus($channel, $bus_name);
         //$channel->queue_bind($amqpDetail['queue_name'], $amqpDetail['exchange_name'],$amqpDetail['route_key']);
         /*
@@ -67,12 +65,16 @@ class AmqpBus extends AbstractBus implements BusInterface
 
         //消费队列～
         $busInfo = BusPassenger::instance()->getBusInfo($bus_name);
+
+        var_dump($busInfo);
         foreach ($busInfo['passengers'] as $queue_name) {
             //$this->queue_name = $queue_name;
+            var_dump($queue_name);
             $channel->basic_consume($queue_name, '', false, $noAck, false, false, function (AMQPMessage $msg) use ($queue_name) {
                 $messageData = json_decode($msg->body, true);
                 //执行对应的class即可
                 //todo.
+                var_dump($queue_name);
                 $handler = BusPassenger::Instance()->getWork()[$queue_name]['class'];
 
                 try {

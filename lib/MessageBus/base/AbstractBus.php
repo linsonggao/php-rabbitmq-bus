@@ -1,10 +1,10 @@
 <?php
 
 
-namespace app\lib\MessageBus\base;
+namespace PhpRabbitMq\Lib\MessageBus\base;
 
 
-use app\lib\MessageBus\BusPassenger;
+use PhpRabbitMq\Lib\MessageBus\BusPassenger;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Wire\AMQPTable;
 
@@ -32,7 +32,6 @@ abstract class AbstractBus
         $businfo = BusPassenger::instance()->getBusInfo($name);
         $channel->queue_declare($name, false, true, false, false);
         if (is_array($businfo['delay_seconds_arr']) && count($businfo['delay_seconds_arr']) > 0 ) {
-            $this->delete_delay_queue($channel,$name);
             foreach ($businfo['passengers'] as $passenger) {
                 if (isset($businfo['delay_arr'][$passenger]) && $businfo['delay_arr'][$passenger]) {
                     $bindDelayBusQueue($businfo,$channel, $passenger, $name);
@@ -95,8 +94,6 @@ abstract class AbstractBus
             // routing key 等于原始队列名称
             $channel->queue_bind($delayedName, $bus_name, $bus_name);
 
-            self::redisCache()->push($bus_name,$delayedName);
-
             // 实际消费队列绑定到死信交换机
             $channel->queue_declare($passenger, false, true, false, false);
             $channel->queue_bind($passenger, self::DEAD_LETTER_EXCHANGE, $bus_name);
@@ -104,35 +101,4 @@ abstract class AbstractBus
         };
         $this->bindBusPassengers($channel, $bus_name,$bindDirectBusQueue,$bindDelayBusQueue);
     }
-
-    //因为没有使用动态延迟,如果延迟队列修改了时间请解除历史绑定延迟队列时间，也可以在操作界面上直接删除~~~!!
-    ////Message->Exchange--> Delayed Queue ->默认交换机(dlx.direct)->Queue->consumer hander
-    public function delete_delay_queue(AMQPChannel $channel, $name){
-        $businfo = BusPassenger::instance()->getBusInfo($name);
-        $delayedQueues = self::redisCache()->get($name);
-        if ($delayedQueues) {
-            foreach ($delayedQueues as $delayedQueue) {
-                //检查不能误删
-                foreach ($businfo['passengers'] as $passenger) {
-                    $delayedName = $passenger . '.delayed.' . $businfo['delay_seconds_arr'][$passenger];
-                    if($delayedName == $delayedQueue) {
-                        //dump("continue success:".$delayedQueue);
-                        continue 2;
-                    }
-                }
-                //dump("delete success:".$delayedQueue);
-                $channel->queue_delete($delayedQueue);
-                $channel->exchange_unbind($name,$delayedQueue);
-            }
-            self::redisCache()->clear();
-        }
-    }
-
-    public static function redisCache()
-    {
-        $cache = Cache::store('redis');
-        $cache->handler()->select(2);
-        return $cache;
-    }
-
 }

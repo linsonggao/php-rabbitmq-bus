@@ -1,8 +1,8 @@
 <?php
 
-namespace app\lib;
+namespace PhpRabbitMq\Lib;
 
-use app\lib\MessageBus\base\AbstractWork;
+use PhpRabbitMq\Lib\MessageBus\base\AbstractWork;
 
 trait Instance
 {

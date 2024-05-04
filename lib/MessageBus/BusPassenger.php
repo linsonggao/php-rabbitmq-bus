@@ -1,9 +1,9 @@
 <?php
 
-namespace app\lib\MessageBus;
+namespace PhpRabbitMq\Lib\MessageBus;
 
-use app\lib\Instance;
-use app\lib\MessageBus\works\OrderCancel;
+use PhpRabbitMq\Lib\Instance;
+use PhpRabbitMq\Lib\MessageBus\works\OrderCancel;
 
 /**
  * rabbitMq的交换机队列规则class
@@ -81,7 +81,7 @@ class BusPassenger
                     {
                         $class .= ucfirst($psStr);
                     }
-                    $this->registeHandler($passenger,'app\\lib\\MessageBus\\works\\'.$class);
+                    $this->registeHandler($passenger,'PhpRabbitMq\\Lib\\MessageBus\\works\\'.$class);
                 }
             }
         }

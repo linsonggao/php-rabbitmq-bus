@@ -1,5 +1,13 @@
 {
     "require": {
         "php-amqplib/php-amqplib": "^3.6"
+    },
+    "autoload": {
+        "files": [
+            "lib/help.php"
+        ],
+        "psr-4": {
+            "PhpRabbitMq\\Lib\\": "lib/"
+        }
     }
 }

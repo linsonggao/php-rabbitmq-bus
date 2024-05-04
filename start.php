@@ -1,6 +1,7 @@
 <?php
+require "./vendor/autoload.php";
 
-use app\lib\MessageBus\base\AmqpBus;
+use PhpRabbitMq\Lib\MessageBus\base\AmqpBus;
 ini_set ("memory_limit","-1");
 //* 1.用户登录事件监听   php think message_bus --bus member-login
 //*

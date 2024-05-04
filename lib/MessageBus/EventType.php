@@ -1,6 +1,6 @@
 <?php
 
-namespace app\lib\MessageBus;
+namespace PhpRabbitMq\Lib\MessageBus;
 
 class EventType
 {

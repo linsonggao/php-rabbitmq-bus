@@ -1,6 +1,6 @@
 <?php
 
-namespace app\lib\MessageBus;
+namespace PhpRabbitMq\Lib\MessageBus;
 
 final class BusEnum
 {

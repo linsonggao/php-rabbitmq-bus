@@ -1,6 +1,6 @@
 <?php
 
-namespace app\lib\MessageBus\base;
+namespace PhpRabbitMq\Lib\MessageBus\base;
 
 interface BusInterface
 {

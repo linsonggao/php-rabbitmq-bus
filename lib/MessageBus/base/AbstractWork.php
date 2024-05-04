@@ -1,12 +1,12 @@
 <?php
 
 
-namespace app\lib\MessageBus\base;
+namespace PhpRabbitMq\Lib\MessageBus\base;
 
 
-use app\common\model\click\CpaClick;
-use app\lib\Instance;
-use app\lib\MessageBus\EventType;
+use PhpRabbitMq\common\model\click\CpaClick;
+use PhpRabbitMq\Lib\Instance;
+use PhpRabbitMq\Lib\MessageBus\EventType;
 use GuzzleHttp\Client;
 use think\Collection;
 
