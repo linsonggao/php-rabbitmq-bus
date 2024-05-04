@@ -14,6 +14,11 @@ return [
 ];
 ```
 使用方法
+```
+git clone https://github.com/linsonggao/php-rabbitmq-bus
+composer install
+```
+
 ## 1.开启监听demo
 php start.php
 ## 2.生产demo
