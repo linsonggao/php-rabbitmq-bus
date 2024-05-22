@@ -1,5 +1,5 @@
 {
-    "name": "php-rabbitmq-bus",
+    "name": "lsg/php-rabbitmq-bus",
     "require": {
         "php-amqplib/php-amqplib": "^3.6"
     },
