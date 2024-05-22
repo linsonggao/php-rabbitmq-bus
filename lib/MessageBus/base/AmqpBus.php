@@ -5,10 +5,8 @@ namespace PhpRabbitMq\Lib\MessageBus\base;
 
 use PhpRabbitMq\Lib\Instance;
 use PhpRabbitMq\Lib\MessageBus\BusPassenger;
-use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Exception\AMQPConnectionClosedException;
 use PhpAmqpLib\Message\AMQPMessage;
-use PhpAmqpLib\Wire\AMQPTable;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 
 
@@ -66,15 +64,15 @@ class AmqpBus extends AbstractBus implements BusInterface
         //消费队列～
         $busInfo = BusPassenger::instance()->getBusInfo($bus_name);
 
-        var_dump($busInfo);
+        //var_dump($busInfo);
         foreach ($busInfo['passengers'] as $queue_name) {
             //$this->queue_name = $queue_name;
-            var_dump($queue_name);
+            //var_dump($queue_name);
             $channel->basic_consume($queue_name, '', false, $noAck, false, false, function (AMQPMessage $msg) use ($queue_name) {
                 $messageData = json_decode($msg->body, true);
                 //执行对应的class即可
                 //todo.
-                var_dump($queue_name);
+                //var_dump($queue_name);
                 $handler = BusPassenger::Instance()->getWork()[$queue_name]['class'];
 
                 try {
